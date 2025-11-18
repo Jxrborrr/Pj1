@@ -40,7 +40,6 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { padding: theme.spacing(4) },
 }));
 
-// ใช้ env ของ CRA; เปลี่ยนพอร์ต/โดเมนตาม backend
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
 export default function SignUp(props) {
@@ -52,7 +51,7 @@ export default function SignUp(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // ui/validation state
+  // ui
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -78,7 +77,7 @@ export default function SignUp(props) {
 
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/register`, {   // ถ้า backend เป็น /auth/register ให้เปลี่ยนบรรทัดนี้
+      const res = await fetch(`${API_URL}/register`, {   
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

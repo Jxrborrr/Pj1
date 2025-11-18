@@ -15,13 +15,14 @@ function getToken() {
   return localStorage.getItem('token') || sessionStorage.getItem('token');
 }
 
-export default function AccountMenu({ onSignOut, onMyTrips, onProfile }) {
+export default function AccountMenu({ onSignOut, onMyTrips, onProfile, onAdmin }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const user = getStoredUser();
+  const isAdmin = !!user?.is_admin;
   const token = getToken();
   const open = Boolean(anchorEl);
 
-  if (!token) return null; 
+  if (!token) return null;
 
   const fullName = user ? `${user.fname || ''} ${user.lname || ''}`.trim() : 'My account';
   const initials = (user?.fname?.[0] || user?.email?.[0] || 'U').toUpperCase();
@@ -31,9 +32,9 @@ export default function AccountMenu({ onSignOut, onMyTrips, onProfile }) {
 
   const handleSignOut = () => {
     localStorage.removeItem('token'); sessionStorage.removeItem('token');
-    localStorage.removeItem('user');  sessionStorage.removeItem('user');
+    localStorage.removeItem('user'); sessionStorage.removeItem('user');
     handleClose();
-    onSignOut?.(); 
+    onSignOut?.();
   };
 
   return (
@@ -78,6 +79,17 @@ export default function AccountMenu({ onSignOut, onMyTrips, onProfile }) {
         >
           <Typography variant="body1">Profile</Typography>
         </MenuItem>
+
+        {isAdmin && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              onAdmin?.();
+            }}
+          >
+            <Typography variant="body1">Admin Dashboard</Typography>
+          </MenuItem>
+        )}
 
         <Box sx={{ p: 2 }}>
           <Button fullWidth variant="outlined" onClick={handleSignOut}>

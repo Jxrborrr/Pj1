@@ -90,28 +90,37 @@ export default function SignIn(props) {
       const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
-      // จัดการ error จาก server ตามสถานะให้เหมาะสม
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
+    
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || data.status !== 'ok') {
+        
         if (res.status === 401) {
           setFormError(data.message || 'Invalid email or password');
         } else if (res.status === 429) {
-          setFormError(data.message || 'Too many attempts. Please try again later.');
+          setFormError(
+            data.message || 'Too many attempts. Please try again later.'
+          );
         } else {
           setFormError(data.message || 'Server error');
         }
         return;
       }
 
-      const data = await res.json();
-
       if (data?.token) {
         const store = remember ? localStorage : sessionStorage;
+
         store.setItem('token', data.token);
-        if (data.user) store.setItem('user', JSON.stringify(data.user));
+
+        if (data.user) {
+          store.setItem('user', JSON.stringify(data.user));
+        }
 
         navigate('/HotelBooking', { replace: true });
       } else {
@@ -128,14 +137,31 @@ export default function SignIn(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
+      <ColorModeSelect
+        sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
+      />
       <SignInContainer direction="column" justifyContent="center">
         <Card variant="outlined">
-          <Typography component="h1" variant="h4" sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{
+              width: '100%',
+              fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+            }}
+          >
             Sign in
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
@@ -191,7 +217,12 @@ export default function SignIn(props) {
               </Typography>
             )}
 
-            <Button type="submit" fullWidth variant="contained" disabled={loading}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+            >
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </Box>
